@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DETABApp</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_test_api">TestApi</string>
+</resources>
