@@ -1,29 +1,24 @@
 package com.detab.detabapp;
 
-import android.preference.PreferenceActivity;
+//import org.apache.http.Header;
+//import org.apache.http.HttpResponse;
+//import org.apache.http.client.HttpClient;
+//import org.apache.http.client.methods.HttpGet;
+//import org.apache.http.impl.client.HttpClientBuilder;
 
-import com.google.gson.GsonBuilder;
+//import org.apache.http.client.methods.*;
+//import org.apache.http.impl.client.*;
 
-import java.io.BufferedReader;
+import android.os.AsyncTask;
+
+import org.json.*;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.HttpStatus;
-import cz.msebera.android.httpclient.NameValuePair;
-import cz.msebera.android.httpclient.client.ClientProtocolException;
-import cz.msebera.android.httpclient.client.methods.HttpDelete;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.ResponseHandler;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
-import cz.msebera.android.httpclient.client.methods.HttpPost;
-import cz.msebera.android.httpclient.client.utils.URLEncodedUtils;
-import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.impl.client.BasicResponseHandler;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 /**
@@ -31,9 +26,44 @@ import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
  */
 
 
-public class HttpClient
+public class TRLHttpClient
 {
-    public <T> T PostObject(final String url, final T object, final Class<T> objectClass)
+    public ReturnedObject TGet(String url)
+    {
+        HttpClient client = new DefaultHttpClient();
+        HttpGet getMethod = new HttpGet(url);
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        String responseBody = null;
+        try
+        {
+            responseBody = client.execute(getMethod, responseHandler);
+            JSONObject obj = new JSONObject(responseBody);
+            ReturnedObject result = new ReturnedObject();
+
+            result.body = obj.get("body").toString();
+            result.title = obj.get("title").toString();
+            return result;
+//            String pais = obj.get("country_name").toString();
+//            String estado = obj.get("region_name").toString();
+//            String cidade = obj.get("city").toString();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+            return null;
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+//    public void TGet(String url)
+//    {
+//        HttpClient client = HttpClientBuilder.create().build();
+//        HttpGet request = new HttpGet(url);
+//        HttpResponse response = client.execute(request);
+//    }
+
+   /* public <T> T PostObject(final String url, final T object, final Class<T> objectClass)
     {
         DefaultHttpClient defaultHttpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
@@ -110,9 +140,10 @@ public class HttpClient
         }
 
         return stringBuilder.toString();
-    }
+    }*/
 
-    public <T> T Get(String url, final Class<T> objectClass)
+
+    /*public <T> T Get(String url, final Class<T> objectClass)
     {
         return Get(url, new ArrayList<NameValuePair>(), objectClass);
     }
@@ -176,5 +207,7 @@ public class HttpClient
         }
 
         return false;
-    }
+    }*/
 }
+
+
