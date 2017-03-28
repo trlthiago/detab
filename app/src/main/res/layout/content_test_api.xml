@@ -49,6 +49,16 @@
         android:onClick="btnPlaySound_Click"
         android:text="Play Sound"/>
 
+    <Button
+        android:id="@+id/btnPlaySoundFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/btnCallWebApi"
+        android:layout_below="@+id/btnCallWebApi"
+        android:layout_marginTop="210dp"
+        android:onClick="btnPlaySoundFile_Click"
+        android:text="Play Sound File"/>
+
 </RelativeLayout>
 
 

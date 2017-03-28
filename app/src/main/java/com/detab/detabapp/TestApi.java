@@ -1,10 +1,12 @@
 package com.detab.detabapp;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,31 +15,22 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.NameValuePair;
 
 public class TestApi extends AppCompatActivity
 {
+    TRLTextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_test_api);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
-        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View view)
-//            {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        tts = new TRLTextToSpeech(getApplicationContext());
     }
 
     public void UpdateScreen(ReturnedObject result)
@@ -58,7 +51,7 @@ public class TestApi extends AppCompatActivity
 
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
 
-        new TRLTextToSpeech(this).Speak(text);
+        tts.Speak(text);
     }
 
     public void PlaySound()
@@ -71,6 +64,26 @@ public class TestApi extends AppCompatActivity
         } catch (Exception e)
         {
             e.printStackTrace();
+        }
+    }
+
+    public void btnPlaySoundFile_Click(View v)
+    {
+        try
+        {
+//            MediaPlayer mediaPlayer = new MediaPlayer();
+//            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//            mediaPlayer.setDataSource(getUrl());
+//            mediaPlayer.prepare();
+//            mediaPlayer.start();
+
+            //Uri.parse(Environment.getExternalStorageDirectory().getPath() + "/Music/intro.mp3")
+            MediaPlayer mpintro = MediaPlayer.create(getApplicationContext(), R.raw.selectorsound);
+            mpintro.setLooping(false);
+            mpintro.start();
+        } catch (Exception e)
+        {
+
         }
     }
 
