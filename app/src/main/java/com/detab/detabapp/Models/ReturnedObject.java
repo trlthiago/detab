@@ -1,4 +1,4 @@
-package com.detab.detabapp;
+package com.detab.detabapp.Models;
 
 public final class ReturnedObject
 {

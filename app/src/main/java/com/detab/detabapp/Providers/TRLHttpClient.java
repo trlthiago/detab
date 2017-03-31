@@ -1,4 +1,4 @@
-package com.detab.detabapp;
+package com.detab.detabapp.Providers;
 
 //import org.apache.http.Header;
 //import org.apache.http.HttpResponse;
@@ -9,7 +9,7 @@ package com.detab.detabapp;
 //import org.apache.http.client.methods.*;
 //import org.apache.http.impl.client.*;
 
-import android.os.AsyncTask;
+import com.detab.detabapp.Models.ReturnedObject;
 
 import org.json.*;
 

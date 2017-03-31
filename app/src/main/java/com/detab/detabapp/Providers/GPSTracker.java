@@ -1,4 +1,4 @@
-package com.detab.detabapp;
+package com.detab.detabapp.Providers;
 
 /**
  * Created by thiago on 20/03/2017.

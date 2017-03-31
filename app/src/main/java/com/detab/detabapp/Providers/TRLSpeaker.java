@@ -1,4 +1,4 @@
-package com.detab.detabapp;
+package com.detab.detabapp.Providers;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 /**
