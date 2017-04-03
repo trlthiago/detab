@@ -21,6 +21,7 @@ import com.detab.detabapp.Providers.NetworkTask;
 import com.detab.detabapp.Providers.TRLPushNotification;
 import com.detab.detabapp.Providers.TRLService;
 import com.detab.detabapp.Providers.TRLServiceConnection;
+import com.detab.detabapp.Providers.TRLSpeaker;
 import com.detab.detabapp.Providers.TRLTextToSpeech;
 import com.detab.detabapp.R;
 
@@ -28,6 +29,7 @@ public class GeneralTests extends AppCompatActivity
 {
     TRLTextToSpeech tts;
     private TRLServiceConnection _serviceConnection; //= new ServiceConnection();
+    private TRLSpeaker _speaker;
 
 //    {
 //
@@ -55,6 +57,7 @@ public class GeneralTests extends AppCompatActivity
         tts = new TRLTextToSpeech(getApplicationContext());
 
         _serviceConnection = new TRLServiceConnection();
+        _speaker = new TRLSpeaker(getApplicationContext());
     }
 
     @Override
@@ -98,19 +101,6 @@ public class GeneralTests extends AppCompatActivity
         tts.Speak(text);
     }
 
-    public void PlaySound()
-    {
-        try
-        {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-            r.play();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     public void btnPlaySoundFile_Click(View v)
     {
         try
@@ -134,7 +124,7 @@ public class GeneralTests extends AppCompatActivity
     public void btnPlaySound_Click(View v)
     {
         //final MediaPlayer mp = MediaPlayer.create(this, R.raw.soho);
-        PlaySound();
+        _speaker.PlaySound();
     }
 
     public void btnShowNotification_Click(View v)

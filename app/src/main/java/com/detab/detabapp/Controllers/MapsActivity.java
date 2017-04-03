@@ -13,6 +13,8 @@ import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.detab.detabapp.Providers.GPSTracker;
+import com.detab.detabapp.Providers.TRLSpeaker;
+import com.detab.detabapp.Providers.TRLTextToSpeech;
 import com.detab.detabapp.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,15 +26,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener
 {
-
     private GoogleMap mMap;
-    private Location mCurrentLocation;
     private GPSTracker gps;
     private Marker currLocationMarker;
+    private Location mCurrentLocation;
+    private final int REQUEST_PERMISSION_PHONE_STATE = 1;
+    private TRLSpeaker _speaker;
+    private TRLTextToSpeech _tts;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,11 +50,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         gps = new GPSTracker(this);
+        _speaker = new TRLSpeaker(getApplicationContext());
+        _tts = new TRLTextToSpeech(getApplicationContext());
     }
-
-    private final int REQUEST_PERMISSION_PHONE_STATE = 1;
-    private static final LatLng SYDNEY = new LatLng(-33.88, 151.21);
-    private static final LatLng MOUNTAIN_VIEW = new LatLng(37.4, -122.1);
 
     private Location getLastKnownLocation()
     {
@@ -88,27 +92,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
-        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
+        mMap.setMyLocationEnabled(true);
         mCurrentLocation = gps.getLocation(); //getLastKnownLocation();
 
-
-        Toast.makeText(
-                this,
-                "Location Null", Toast.LENGTH_SHORT).show();
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 10);
+        Toast.makeText(this, "Location Null", Toast.LENGTH_SHORT).show();
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 17);
         //mMap.moveCamera(cameraUpdate);
         mMap.animateCamera(cameraUpdate);
         LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
-        currLocationMarker = mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
-                .title("Current Position").rotation(0));
+//        currLocationMarker = mMap.addMarker(new MarkerOptions()
+//                .position(latLng)
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+//                .title("Current Position").rotation(0));
 
 
         // Move the camera instantly to Sydney with a zoom of 15.
@@ -146,6 +148,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location)
     {
+        _speaker.PlaySound();
+        _tts.Speak("New position detected!");
+
         mCurrentLocation = location;
         Toast.makeText(this, "Main: " + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
         //place marker at current position
@@ -186,5 +191,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onProviderDisabled(String provider)
     {
 
+    }
+
+    public ArrayList<Location> GetPotholes()
+    {
+        /*
+        "-50.9682021","-29.9476628"
+        "-50.9688887","-29.9477092"
+        "-50.9689531","-29.9476999"
+        "-50.9692106","-29.9475733"
+        "-50.9706724","-29.947844"
+        "-50.9685078","-29.948009"
+        "-50.9684783","-29.948425"
+        "-50.9692293","-29.9473955"
+        "-50.9698704","-29.9477743"
+        "-50.97027","-29.9483181"
+        "-50.9717989","-29.9480276"
+        "-50.9676254","-29.9476093"
+        "-50.9669709","-29.9475535"
+        "-50.9640956","-29.9473304"
+        "-50.968591","-29.9471352"
+        "-50.9684193","-29.9488457"
+        "-50.9687197","-29.9459917"
+        "-50.9693205","-29.9462241"
+        "-50.9704471","-29.9467912"
+        "-50.9753609","-29.9473211"
+        "-50.9787512","-29.9466053"
+        "-50.9695137","-29.9494871"
+        "-50.9849739","-29.9468098"
+        "-50.9667563","-29.9515881"
+         */
+        ArrayList<Location> list = new ArrayList<Location>(){
+
+        };
+        LatLng ll = new LatLng(1,1);
+        return null;
     }
 }
