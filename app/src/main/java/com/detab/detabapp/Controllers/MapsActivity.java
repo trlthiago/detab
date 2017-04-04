@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.detab.detabapp.Models.TRLLocation;
 import com.detab.detabapp.Providers.GPSTracker;
 import com.detab.detabapp.Providers.TRLSpeaker;
 import com.detab.detabapp.Providers.TRLTextToSpeech;
@@ -26,8 +27,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener
 {
@@ -38,7 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final int REQUEST_PERMISSION_PHONE_STATE = 1;
     private TRLSpeaker _speaker;
     private TRLTextToSpeech _tts;
-
+    private List<TRLLocation> potholes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -101,16 +107,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
         mCurrentLocation = gps.getLocation(); //getLastKnownLocation();
 
-        Toast.makeText(this, "Location Null", Toast.LENGTH_SHORT).show();
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 17);
-        //mMap.moveCamera(cameraUpdate);
-        mMap.animateCamera(cameraUpdate);
+        mMap.moveCamera(cameraUpdate);
+        //mMap.animateCamera(cameraUpdate);
+
+        potholes = GetPotholes();
+        ComputeDistance(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        for (TRLLocation item : potholes)
+        {
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(item.Lat, item.Lng))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+                    .title("Pothole " + item.results[0]));
+        }
+        mMap.setMyLocationEnabled(true);
         LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
-//        currLocationMarker = mMap.addMarker(new MarkerOptions()
-//                .position(latLng)
-//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
-//                .title("Current Position").rotation(0));
+        currLocationMarker = mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                .title("Current Position").rotation(0));
 
 
         // Move the camera instantly to Sydney with a zoom of 15.
@@ -145,11 +161,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
+    private List<TRLLocation> GetNearPotholes(double lat, double lng)
+    {
+        List<TRLLocation> nearPotholes = new ArrayList<>();
+
+        for (TRLLocation x : potholes)
+        {
+            if (x.results[0] < 15.0)
+            {
+                nearPotholes.add(x);
+            }
+        }
+
+        Collections.sort(nearPotholes, new Comparator<TRLLocation>()
+        {
+            @Override
+            public int compare(TRLLocation a, TRLLocation b)
+            {
+                if (a.results[0] < b.results[0]) return -1;
+                if (a.results[0] > b.results[0]) return 1;
+                return 0;
+            }
+        });
+
+        return nearPotholes;
+    }
+
+    @SuppressWarnings("Since15")
     @Override
     public void onLocationChanged(Location location)
     {
-        _speaker.PlaySound();
-        _tts.Speak("New position detected!");
+        ComputeDistance(location.getLatitude(), location.getLongitude());
+
+        List<TRLLocation> list = GetNearPotholes(location.getLatitude(), location.getLongitude());
+
+        if (list.size() > 0)
+        {
+            _speaker.PlaySound();
+            _tts.Speak("New in " + (int) list.get(0).results[0] + " meters");
+        }
 
         mCurrentLocation = location;
         Toast.makeText(this, "Main: " + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
@@ -172,6 +222,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //zoom to current position:
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+
+        //noinspection MissingPermission
+        mMap.setMyLocationEnabled(true);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
@@ -193,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public ArrayList<Location> GetPotholes()
+    public List<TRLLocation> GetPotholes()
     {
         /*
         "-50.9682021","-29.9476628"
@@ -221,10 +274,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         "-50.9849739","-29.9468098"
         "-50.9667563","-29.9515881"
          */
-        ArrayList<Location> list = new ArrayList<Location>(){
+        List<TRLLocation> list; // = new ArrayList<TRLLocation>();
+        list = Arrays.asList(new TRLLocation(-50.9682021, -29.9476628),
+                new TRLLocation(-50.9688887, -29.9477092),
+                new TRLLocation(-50.9689531, -29.9476999),
+                new TRLLocation(-50.9692106, -29.9475733),
+                new TRLLocation(-50.9706724, -29.947844),
+                new TRLLocation(-50.9685078, -29.948009),
+                new TRLLocation(-50.9684783, -29.948425),
+                new TRLLocation(-50.9692293, -29.9473955),
+                new TRLLocation(-50.9698704, -29.9477743),
+                new TRLLocation(-50.97027, -29.9483181),
+                new TRLLocation(-50.9717989, -29.9480276),
+                new TRLLocation(-50.9676254, -29.9476093),
+                new TRLLocation(-50.9669709, -29.9475535),
+                new TRLLocation(-50.9640956, -29.9473304),
+                new TRLLocation(-50.968591, -29.9471352),
+                new TRLLocation(-50.9684193, -29.9488457),
+                new TRLLocation(-50.9687197, -29.9459917),
+                new TRLLocation(-50.9693205, -29.9462241),
+                new TRLLocation(-50.9704471, -29.9467912),
+                new TRLLocation(-50.9753609, -29.9473211),
+                new TRLLocation(-50.9787512, -29.9466053),
+                new TRLLocation(-50.9695137, -29.9494871),
+                new TRLLocation(-50.9849739, -29.9468098),
+                new TRLLocation(-50.9667563, -29.9515881));
 
-        };
-        LatLng ll = new LatLng(1,1);
-        return null;
+        return list;
+    }
+
+    private void ComputeDistance(double lat, double lng)
+    {
+        for (TRLLocation item : potholes)
+        {
+            item.results = new float[3];
+            Location.distanceBetween(lat, lng, item.Lat, item.Lng, item.results);
+        }
     }
 }

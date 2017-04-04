@@ -20,7 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-public class GPSTracker extends Service implements LocationListener
+public class GPSTracker extends Service //implements LocationListener
 {
     private final Context mContext;
 
@@ -51,7 +51,7 @@ public class GPSTracker extends Service implements LocationListener
     {
         this.mContext = context;
         getLocation();
-        Toast.makeText(mContext, location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(mContext, location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
     }
 
     public boolean CheckPermissions()
@@ -103,7 +103,7 @@ public class GPSTracker extends Service implements LocationListener
                 // First get location from Network Provider
                 if (isNetworkEnabled)
                 {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, (LocationListener)mContext);
                     Log.d("Network", "Network");
                     if (locationManager != null)
                     {
@@ -133,13 +133,13 @@ public class GPSTracker extends Service implements LocationListener
      * Stop using GPS listener
      * Calling this function will stop using GPS in your app
      */
-    public void stopUsingGPS()
-    {
-        if (locationManager != null)
-        {
-            locationManager.removeUpdates(GPSTracker.this);
-        }
-    }
+//    public void stopUsingGPS()
+//    {
+//        if (locationManager != null)
+//        {
+//            locationManager.removeUpdates(GPSTracker.this);
+//        }
+//    }
 
     /**
      * Function to get latitude
@@ -216,27 +216,27 @@ public class GPSTracker extends Service implements LocationListener
         alertDialog.show();
     }
 
-    @Override
-    public void onLocationChanged(Location location)
-    {
-        //Toast.makeText(mContext, location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(mContext, "Loc: " + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onProviderDisabled(String provider)
-    {
-    }
-
-    @Override
-    public void onProviderEnabled(String provider)
-    {
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras)
-    {
-    }
+//    @Override
+//    public void onLocationChanged(Location location)
+//    {
+//        //Toast.makeText(mContext, location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mContext, "Loc: " + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//    }
+//
+//    @Override
+//    public void onProviderDisabled(String provider)
+//    {
+//    }
+//
+//    @Override
+//    public void onProviderEnabled(String provider)
+//    {
+//    }
+//
+//    @Override
+//    public void onStatusChanged(String provider, int status, Bundle extras)
+//    {
+//    }
 
     @Override
     public IBinder onBind(Intent arg0)
