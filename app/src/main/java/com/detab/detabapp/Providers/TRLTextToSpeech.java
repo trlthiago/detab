@@ -36,7 +36,7 @@ public class TRLTextToSpeech implements TextToSpeech.OnInitListener
         Bundle bundle = new Bundle();
 
         tts.setPitch(1.3f);
-        tts.setSpeechRate(1f);
+        tts.setSpeechRate(0.9f);
         int result = tts.speak(text, TextToSpeech.QUEUE_FLUSH, bundle, "123");
         if(result != 0)
             Toast.makeText(_ctx, "An error has occurred to emmit the alert voice.", Toast.LENGTH_SHORT).show();

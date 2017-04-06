@@ -24,7 +24,7 @@ public class TRLSpeaker
     {
         try
         {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION); // .TYPE_NOTIFICATION
             Ringtone r = RingtoneManager.getRingtone(_ctx, notification);
             r.play();
         } catch (Exception e)

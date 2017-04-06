@@ -198,11 +198,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (list.size() > 0)
         {
             _speaker.PlaySound();
-            _tts.Speak("New in " + (int) list.get(0).results[0] + " meters");
+            _tts.Speak("Pothole in " + (int) list.get(0).results[0] + " meters");
+            Toast.makeText(this, "Pothole in " + (int) list.get(0).results[0] + " meters", Toast.LENGTH_SHORT).show();
         }
 
         mCurrentLocation = location;
-        Toast.makeText(this, "Main: " + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+
         //place marker at current position
         //mGoogleMap.clear();
         LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
