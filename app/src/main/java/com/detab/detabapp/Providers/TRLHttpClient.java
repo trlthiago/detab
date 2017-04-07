@@ -10,10 +10,13 @@ package com.detab.detabapp.Providers;
 //import org.apache.http.impl.client.*;
 
 import com.detab.detabapp.Models.ReturnedObject;
+import com.detab.detabapp.Models.TRLLocation;
 
 import org.json.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.ResponseHandler;
@@ -28,7 +31,7 @@ import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 public class TRLHttpClient
 {
-    public ReturnedObject TGet(String url)
+    public List<TRLLocation> TGet(String url)
     {
         HttpClient client = new DefaultHttpClient();
         HttpGet getMethod = new HttpGet(url);
@@ -37,12 +40,23 @@ public class TRLHttpClient
         try
         {
             responseBody = client.execute(getMethod, responseHandler);
-            JSONObject obj = new JSONObject(responseBody);
-            ReturnedObject result = new ReturnedObject();
 
-            result.body = obj.get("body").toString();
-            result.title = obj.get("title").toString();
-            return result;
+            //JSONObject obj = new JSONObject(responseBody);
+            JSONArray obj = new JSONArray(responseBody);
+            //UserIdentifier userIdentifier = gson.fromJson(jsonUserIdentifier , UserIdentifier.class);
+
+            List<TRLLocation> results = new ArrayList<TRLLocation>();
+            int myJsonArraySize = obj.length();
+            for (int i = 0; i < myJsonArraySize; i++)
+            {
+                JSONObject item = (JSONObject) obj.get(i);
+
+                TRLLocation o = new TRLLocation(Double.parseDouble(item.get("Lat").toString()), Double.parseDouble(item.get("Lng").toString()));
+                results.add(o);
+            }
+//            result.body = obj.get("body").toString();
+//            result.title = obj.get("title").toString();
+            return results;
 //            String pais = obj.get("country_name").toString();
 //            String estado = obj.get("region_name").toString();
 //            String cidade = obj.get("city").toString();

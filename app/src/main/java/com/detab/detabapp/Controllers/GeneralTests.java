@@ -1,15 +1,9 @@
 package com.detab.detabapp.Controllers;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.detab.detabapp.Models.ReturnedObject;
-import com.detab.detabapp.Providers.NetworkTask;
+import com.detab.detabapp.Providers.GetPotholesTask;
 import com.detab.detabapp.Providers.TRLPushNotification;
 import com.detab.detabapp.Providers.TRLService;
 import com.detab.detabapp.Providers.TRLServiceConnection;
@@ -87,9 +81,9 @@ public class GeneralTests extends AppCompatActivity
 
     public void btnCallWebApi_Click(View v)
     {
-        NetworkTask j = new NetworkTask();
-        j.delegate = this;
-        j.execute("https://jsonplaceholder.typicode.com/posts/1");
+//        GetPotholesTask j = new GetPotholesTask();
+//        j.delegate = this;
+//        j.execute("https://jsonplaceholder.typicode.com/posts/1");
     }
 
     public void btnSpeech_Click(View v)
