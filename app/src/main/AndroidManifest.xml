@@ -59,6 +59,7 @@
         </activity>
 
         <service android:name=".Providers.TRLService"/>
+        <service android:name=".Providers.TCPServerService"/>
     </application>
 
 </manifest>

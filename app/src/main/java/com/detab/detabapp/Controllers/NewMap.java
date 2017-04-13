@@ -1,20 +1,30 @@
 package com.detab.detabapp.Controllers;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.detab.detabapp.Models.TRLLocation;
 import com.detab.detabapp.Providers.GPSTracker;
 import com.detab.detabapp.Providers.GetPotholesTask;
+import com.detab.detabapp.Providers.TCPServerService;
+import com.detab.detabapp.Providers.TRLService;
+import com.detab.detabapp.Providers.TRLServiceConnection;
 import com.detab.detabapp.Providers.TRLSpeaker;
 import com.detab.detabapp.Providers.TRLTextToSpeech;
 import com.detab.detabapp.R;
@@ -46,6 +56,25 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
     private TRLTextToSpeech _tts;
     private Marker _currLocationMarker;
     private List<TRLLocation> _potholes;
+    private LatLng _coords;
+    public TCPServerService _tcpService;
+    boolean isBound;
+
+    public ServiceConnection _tcpServiceConnection = new ServiceConnection()
+    {
+        public void onServiceConnected(ComponentName className, IBinder binder)
+        {
+            Toast.makeText(getApplicationContext(), "onServiceConnected", Toast.LENGTH_SHORT).show();
+            _tcpService = ((TCPServerService.TCPServerBinder) binder).GetService();
+            isBound = true;
+        }
+
+        public void onServiceDisconnected(ComponentName className)
+        {
+            _tcpService = null;
+            isBound = false;
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -55,20 +84,23 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.newmap);
         mapFragment.getMapAsync(this);
-//        .getMap().setOnMapClickListener(new GoogleMap.OnMapClickListener()
-//        {
-//            @Override
-//            public void onMapClick(LatLng arg0)
-//            {
-//                android.util.Log.i("onMapClick", "Horray!");
-//            }
-//        });
 
         AskPermissions();
+//startService(new Intent(getBaseContext(), TCPServerService.class));
+        Intent bindServiceIntent = new Intent(this, TCPServerService.class);
+        bindService(bindServiceIntent, _tcpServiceConnection, Context.BIND_AUTO_CREATE);
 
         gps = new GPSTracker(this);
         _speaker = new TRLSpeaker(getApplicationContext());
         _tts = new TRLTextToSpeech(getApplicationContext());
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        Log.v("TRL", "onDestroy");
+        unbindService(_tcpServiceConnection);
+        super.onDestroy();
     }
 
     private void AskPermissions()
@@ -92,6 +124,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
                     public void onMapClick(LatLng arg0)
                     {
                         Toast.makeText(getApplicationContext(), arg0.latitude + "-" + arg0.longitude, Toast.LENGTH_SHORT).show();
+                        _coords = arg0;
                     }
                 }
         );
@@ -247,6 +280,8 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
 
     public void btnDefinePothole_Click(View v)
     {
-
+        _tcpService.Listen();
+        _tcpService.getLocalIpAddress();
+        Toast.makeText(getApplicationContext(), _tcpService.Ping(), Toast.LENGTH_SHORT).show();
     }
 }
