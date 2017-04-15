@@ -2,12 +2,15 @@ package com.detab.detabapp.Providers;
 
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.detab.detabapp.Models.PotholeCollection;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -29,6 +32,10 @@ import static android.content.ContentValues.TAG;
 public class TCPServerService extends Service
 {
     private final IBinder binder = new TCPServerBinder();
+
+    private Thread ServerThread;
+    private PotholeCollection _potholeCollection;
+    private GPSTracker _gps;
 
     public TCPServerService()
     {
@@ -71,27 +78,52 @@ public class TCPServerService extends Service
         return null;
     }
 
-    public void Listen()
+    public void Listen(PotholeCollection potholeCollection, GPSTracker gps)
     {
-        try
-        {
-            String clientSentence;
-            String capitalizedSentence;
-            ServerSocket welcomeSocket = new ServerSocket(6789);
+        _gps = gps;
+        _potholeCollection = potholeCollection;
 
-            while (true)
-            {
-                Socket connectionSocket = welcomeSocket.accept();
-                BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-                clientSentence = inFromClient.readLine();
-                System.out.println("Received: " + clientSentence);
-                capitalizedSentence = clientSentence.toUpperCase() + '\n';
-                outToClient.writeBytes(capitalizedSentence);
-            }
-        } catch (Exception e)
+        ServerThread = new Thread(new Runnable()
         {
-        }
+            @Override
+            public void run()
+            {
+                try
+                {
+                    String clientSentence;
+                    String capitalizedSentence;
+                    ServerSocket welcomeSocket = new ServerSocket(6789);
+                    Socket connectionSocket = welcomeSocket.accept();
+                    BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                    DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+                    while (true)
+                    {
+                        clientSentence = inFromClient.readLine();
+                        System.out.println("Received: " + clientSentence);
+
+                        Log.v("TRL", clientSentence);
+
+                        if(clientSentence.equals("p"))
+                        {
+                            _potholeCollection.DeclareNewPothole(_gps.getLatitude(), _gps.getLongitude());
+                        }
+
+                        capitalizedSentence = clientSentence.toUpperCase() + '\n';
+                        outToClient.writeBytes(capitalizedSentence);
+                    }
+                } catch (Exception e)
+                {
+                    Log.e("TRL", e.getMessage(), e);
+                }
+            }
+        });
+
+        ServerThread.start();
+    }
+
+    public void UnListen()
+    {
+
     }
 
     @Nullable

@@ -50,6 +50,14 @@ public class GPSTracker extends Service //implements LocationListener
     public GPSTracker(Context context)
     {
         this.mContext = context;
+        locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+
+        // getting GPS status
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        // getting network status
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
         getLocation();
         //Toast.makeText(mContext, location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
     }
@@ -70,14 +78,6 @@ public class GPSTracker extends Service //implements LocationListener
     {
         try
         {
-            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
-
-            // getting GPS status
-            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            // getting network status
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
             if (isGPSEnabled) // if GPS Enabled get lat/long using GPS Services
             {
                 this.canGetLocation = true;
@@ -85,7 +85,6 @@ public class GPSTracker extends Service //implements LocationListener
                 if (location == null)
                 {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, (LocationListener) mContext);
-                    Log.d("GPS Enabled", "GPS Enabled");
                     if (locationManager != null)
                     {
                         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -103,8 +102,7 @@ public class GPSTracker extends Service //implements LocationListener
                 // First get location from Network Provider
                 if (isNetworkEnabled)
                 {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, (LocationListener)mContext);
-                    Log.d("Network", "Network");
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, (LocationListener) mContext);
                     if (locationManager != null)
                     {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

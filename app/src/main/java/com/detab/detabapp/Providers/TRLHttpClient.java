@@ -9,8 +9,7 @@ package com.detab.detabapp.Providers;
 //import org.apache.http.client.methods.*;
 //import org.apache.http.impl.client.*;
 
-import com.detab.detabapp.Models.ReturnedObject;
-import com.detab.detabapp.Models.TRLLocation;
+import com.detab.detabapp.Models.TRLPothole;
 
 import org.json.*;
 
@@ -31,7 +30,7 @@ import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 public class TRLHttpClient
 {
-    public List<TRLLocation> TGet(String url)
+    public List<TRLPothole> TGet(String url)
     {
         HttpClient client = new DefaultHttpClient();
         HttpGet getMethod = new HttpGet(url);
@@ -45,13 +44,13 @@ public class TRLHttpClient
             JSONArray obj = new JSONArray(responseBody);
             //UserIdentifier userIdentifier = gson.fromJson(jsonUserIdentifier , UserIdentifier.class);
 
-            List<TRLLocation> results = new ArrayList<TRLLocation>();
+            List<TRLPothole> results = new ArrayList<TRLPothole>();
             int myJsonArraySize = obj.length();
             for (int i = 0; i < myJsonArraySize; i++)
             {
                 JSONObject item = (JSONObject) obj.get(i);
 
-                TRLLocation o = new TRLLocation(Double.parseDouble(item.get("Lat").toString()), Double.parseDouble(item.get("Lng").toString()));
+                TRLPothole o = new TRLPothole(Double.parseDouble(item.get("Lat").toString()), Double.parseDouble(item.get("Lng").toString()));
                 results.add(o);
             }
 //            result.body = obj.get("body").toString();

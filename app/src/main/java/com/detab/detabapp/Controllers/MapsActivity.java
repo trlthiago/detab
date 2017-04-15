@@ -12,7 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
-import com.detab.detabapp.Models.TRLLocation;
+import com.detab.detabapp.Models.TRLPothole;
 import com.detab.detabapp.Providers.GPSTracker;
 import com.detab.detabapp.Providers.TRLSpeaker;
 import com.detab.detabapp.Providers.TRLTextToSpeech;
@@ -27,7 +27,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final int REQUEST_PERMISSION_PHONE_STATE = 1;
     private TRLSpeaker _speaker;
     private TRLTextToSpeech _tts;
-    private List<TRLLocation> potholes;
+    private List<TRLPothole> potholes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -111,13 +110,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.animateCamera(cameraUpdate);
 
         potholes = GetPotholes();
-        ComputeDistance(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-        for (TRLLocation item : potholes)
+        //ComputeDistance(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+        for (TRLPothole item : potholes)
         {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(item.Lat, item.Lng))
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
-                    .title("Pothole " + item.results[0]));
+                    .title("Pothole " + item.GetDistance()));
         }
         mMap.setMyLocationEnabled(true);
         LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
@@ -160,25 +160,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-    private List<TRLLocation> GetNearPotholes(double lat, double lng)
+    private List<TRLPothole> GetNearPotholes(double lat, double lng)
     {
-        List<TRLLocation> nearPotholes = new ArrayList<>();
+        List<TRLPothole> nearPotholes = new ArrayList<>();
 
-        for (TRLLocation x : potholes)
+        for (TRLPothole x : potholes)
         {
-            if (x.results[0] < 15.0)
+            if (x.GetDistance() < 15.0)
             {
                 nearPotholes.add(x);
             }
         }
 
-        Collections.sort(nearPotholes, new Comparator<TRLLocation>()
+        Collections.sort(nearPotholes, new Comparator<TRLPothole>()
         {
             @Override
-            public int compare(TRLLocation a, TRLLocation b)
+            public int compare(TRLPothole a, TRLPothole b)
             {
-                if (a.results[0] < b.results[0]) return -1;
-                if (a.results[0] > b.results[0]) return 1;
+                if (a.GetDistance() < b.GetDistance()) return -1;
+                if (a.GetDistance() > b.GetDistance()) return 1;
                 return 0;
             }
         });
@@ -190,15 +190,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location)
     {
-        ComputeDistance(location.getLatitude(), location.getLongitude());
+        //ComputeDistance(location.getLatitude(), location.getLongitude());
 
-        List<TRLLocation> list = GetNearPotholes(location.getLatitude(), location.getLongitude());
+        List<TRLPothole> list = GetNearPotholes(location.getLatitude(), location.getLongitude());
 
         if (list.size() > 0)
         {
             _speaker.PlaySound();
-            _tts.Speak("Pothole in " + (int) list.get(0).results[0] + " meters");
-            Toast.makeText(this, "Pothole in " + (int) list.get(0).results[0] + " meters", Toast.LENGTH_SHORT).show();
+            _tts.Speak("Pothole in " + (int) list.get(0).GetDistance() + " meters");
+            Toast.makeText(this, "Pothole in " + (int) list.get(0).GetDistance() + " meters", Toast.LENGTH_SHORT).show();
         }
 
         mCurrentLocation = location;
@@ -246,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public List<TRLLocation> GetPotholes()
+    public List<TRLPothole> GetPotholes()
     {
         /*
         "-50.9682021","-29.9476628"
@@ -274,41 +274,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         "-50.9849739","-29.9468098"
         "-50.9667563","-29.9515881"
          */
-        List<TRLLocation> list; // = new ArrayList<TRLLocation>();
-        list = Arrays.asList(new TRLLocation(-50.9682021, -29.9476628),
-                new TRLLocation(-50.9688887, -29.9477092),
-                new TRLLocation(-50.9689531, -29.9476999),
-                new TRLLocation(-50.9692106, -29.9475733),
-                new TRLLocation(-50.9706724, -29.947844),
-                new TRLLocation(-50.9685078, -29.948009),
-                new TRLLocation(-50.9684783, -29.948425),
-                new TRLLocation(-50.9692293, -29.9473955),
-                new TRLLocation(-50.9698704, -29.9477743),
-                new TRLLocation(-50.97027, -29.9483181),
-                new TRLLocation(-50.9717989, -29.9480276),
-                new TRLLocation(-50.9676254, -29.9476093),
-                new TRLLocation(-50.9669709, -29.9475535),
-                new TRLLocation(-50.9640956, -29.9473304),
-                new TRLLocation(-50.968591, -29.9471352),
-                new TRLLocation(-50.9684193, -29.9488457),
-                new TRLLocation(-50.9687197, -29.9459917),
-                new TRLLocation(-50.9693205, -29.9462241),
-                new TRLLocation(-50.9704471, -29.9467912),
-                new TRLLocation(-50.9753609, -29.9473211),
-                new TRLLocation(-50.9787512, -29.9466053),
-                new TRLLocation(-50.9695137, -29.9494871),
-                new TRLLocation(-50.9849739, -29.9468098),
-                new TRLLocation(-50.9667563, -29.9515881));
+        List<TRLPothole> list; // = new ArrayList<TRLPothole>();
+        list = Arrays.asList(new TRLPothole(-50.9682021, -29.9476628),
+                new TRLPothole(-50.9688887, -29.9477092),
+                new TRLPothole(-50.9689531, -29.9476999),
+                new TRLPothole(-50.9692106, -29.9475733),
+                new TRLPothole(-50.9706724, -29.947844),
+                new TRLPothole(-50.9685078, -29.948009),
+                new TRLPothole(-50.9684783, -29.948425),
+                new TRLPothole(-50.9692293, -29.9473955),
+                new TRLPothole(-50.9698704, -29.9477743),
+                new TRLPothole(-50.97027, -29.9483181),
+                new TRLPothole(-50.9717989, -29.9480276),
+                new TRLPothole(-50.9676254, -29.9476093),
+                new TRLPothole(-50.9669709, -29.9475535),
+                new TRLPothole(-50.9640956, -29.9473304),
+                new TRLPothole(-50.968591, -29.9471352),
+                new TRLPothole(-50.9684193, -29.9488457),
+                new TRLPothole(-50.9687197, -29.9459917),
+                new TRLPothole(-50.9693205, -29.9462241),
+                new TRLPothole(-50.9704471, -29.9467912),
+                new TRLPothole(-50.9753609, -29.9473211),
+                new TRLPothole(-50.9787512, -29.9466053),
+                new TRLPothole(-50.9695137, -29.9494871),
+                new TRLPothole(-50.9849739, -29.9468098),
+                new TRLPothole(-50.9667563, -29.9515881));
 
         return list;
     }
 
-    private void ComputeDistance(double lat, double lng)
-    {
-        for (TRLLocation item : potholes)
-        {
-            item.results = new float[3];
-            Location.distanceBetween(lat, lng, item.Lat, item.Lng, item.results);
-        }
-    }
+//    private void ComputeDistance(double lat, double lng)
+//    {
+//        for (TRLPothole item : potholes)
+//        {
+//            item.results = new float[3];
+//            Location.distanceBetween(lat, lng, item.Lat, item.Lng, item.results);
+//        }
+//    }
 }
