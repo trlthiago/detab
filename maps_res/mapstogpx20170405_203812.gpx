@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" creator="mapstogpx.com" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd">
+  <metadata>
+    <link href="http://www.mapstogpx.com">
+      <text>Sverrir Sigmundarson</text>
+    </link>
+    <!--desc>Map data ©2017 Google</desc-->
+    <!--copyright author="Google Inc">
+    	<year>2017</year>
+    	<license>https://developers.google.com/maps/terms</license>
+    </copyright-->
+    <!--url>https://www.google.co.uk/maps/dir/-29.9458458,-50.9687039/-29.9478817,-50.9685323/@-29.9469428,-50.9689266,19z?hl=pt-BR&hl=en</url-->
+    <time>2017-04-05T17:38:10Z</time>
+  </metadata>
+  <wpt lat="-29.9458458" lon="-50.9687039">
+    <name>Gravataí - RS</name>
+    <desc>R. Manoel Osório Ourique, 104 - Girassol, Gravataí - RS, Brazil</desc>
+  </wpt>
+  <wpt lat="-29.9478817" lon="-50.9685323">
+    <name>Gravataí - RS</name>
+    <desc>R. Manoel Osório Ourique, 320 - Girassol, Gravataí - RS, Brazil</desc>
+  </wpt>
+<trk>
+  <name>Gravataí - RS to Gravataí - RS</name>
+  <number>1</number>
+  <trkseg>
+  <trkpt lat="-29.9458471" lon="-50.9687209">
+    <name>TP001</name>
+  </trkpt>
+  <trkpt lat="-29.94684" lon="-50.96862">
+    <name>TP002</name>
+  </trkpt>
+  <trkpt lat="-29.94769" lon="-50.96854">
+    <name>TP003</name>
+  </trkpt>
+  <trkpt lat="-29.94788" lon="-50.96852">
+    <name>TP004</name>
+  </trkpt>
+  <trkpt lat="-29.9478809" lon="-50.968521">
+    <name>TP005</name>
+  </trkpt>
+  </trkseg>
+</trk>
+</gpx>

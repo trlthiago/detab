@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.x">
+	<Placemark>
+		<name>1</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97684,-29.94705,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>2</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9763,-29.94716,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>3</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97608,-29.94723,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>4</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97562,-29.94737,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>5</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97524,-29.94751,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>6</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97442,-29.94775,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>7</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9743,-29.94777,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>8</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97411,-29.94778,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>9</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97397,-29.94785,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>10</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97386,-29.94789,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>11</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9738,-29.94792,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>12</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97361,-29.948,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>13</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97348,-29.94807,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>14</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9733,-29.9481,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>15</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9729,-29.94823,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>16</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9723,-29.94843,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>17</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97224,-29.94836,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>18</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97191,-29.94813,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>19</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97159,-29.9479,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>20</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97127,-29.94788,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>21</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97096,-29.94786,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>22</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97074,-29.94785,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>23</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97051,-29.94783,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>24</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97041,-29.94782,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>25</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97032,-29.94782,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>26</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.97008,-29.9478,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>27</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96985,-29.94778,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>28</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96953,-29.94776,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>29</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96921,-29.94773,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>30</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96887,-29.94771,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>31</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96854,-29.94769,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>32</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96821,-29.94767,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>33</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96788,-29.94764,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>34</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96756,-29.94762,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>35</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96724,-29.94759,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>36</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96683,-29.94756,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>37</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.96682,-29.94756,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>38</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9768432,-29.9470469,0
+</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>39</name>
+		<description></description>
+		<Point>
+			<coordinates>-50.9668192,-29.9475602,0
+</coordinates>
+		</Point>
+	</Placemark>
+</kml>
