@@ -52,7 +52,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
     boolean isBound;
     private LatLng _coords;
     private Marker _currLocationMarker;
-    private PotholeCollection _potholes;
+    private PotholeCollection _potholesCollection;
     //endregion
 
     //region Service Connectors
@@ -131,12 +131,12 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 17);
         _map.moveCamera(cameraUpdate);
 
-        _potholes = new PotholeCollection(currentLocation.getLatitude(), currentLocation.getLongitude());
+        _potholesCollection = new PotholeCollection(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         //TODO: Move it to when postion change. On ready the API return should contain the distance calculated!
-        _potholes.ComputeDistance(currentLocation.getLatitude(), currentLocation.getLongitude());
+        _potholesCollection.ComputeDistance(currentLocation.getLatitude(), currentLocation.getLongitude());
 
-        RenderPotholes(_potholes.GetAll(), true);
+        RenderPotholes(_potholesCollection.GetAll(), true);
 
         LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
@@ -149,11 +149,12 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
     @Override
     public void onLocationChanged(Location location)
     {
-        _potholes.ComputeDistance(location.getLatitude(), location.getLongitude());
+        _potholesCollection.CheckIfMustUpdate(location.getLatitude(), location.getLongitude());
+        _potholesCollection.ComputeDistance(location.getLatitude(), location.getLongitude());
 
-        RenderPotholes(_potholes.GetAll());
+        RenderPotholes(_potholesCollection.GetAll());
 
-        List<TRLPothole> list = _potholes.GetNearPotholes();
+        List<TRLPothole> list = _potholesCollection.GetNearPotholes();
 
         if (list.size() > 0)
         {
@@ -209,7 +210,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
 
     public void btnDefinePothole_Click(View v)
     {
-        _tcpService.Listen(_potholes, gps);
+        _tcpService.Listen(_potholesCollection, gps);
         Toast.makeText(getApplicationContext(), _tcpService.Ping(), Toast.LENGTH_SHORT).show();
     }
 
