@@ -3,6 +3,8 @@ package com.detab.detabapp.Providers;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -16,11 +18,14 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 import java.util.Enumeration;
 
 import static android.content.ContentValues.TAG;
@@ -31,6 +36,8 @@ import static android.content.ContentValues.TAG;
 
 public class TCPServerService extends Service
 {
+    public static String LOG_TAG = "detabapp";
+
     private final IBinder binder = new TCPServerBinder();
 
     private Thread ServerThread;
@@ -41,10 +48,10 @@ public class TCPServerService extends Service
     {
 //        try
 //        {
-//            //Listen();
-//        } catch (IOException e)
+//            Listen();
+//        } catch (Exception e)
 //        {
-//            e.printStackTrace();
+//
 //        }
     }
 
@@ -63,10 +70,10 @@ public class TCPServerService extends Service
                 for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); )
                 {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress())
+                    if (!inetAddress.isLoopbackAddress() && inetAddress.isLinkLocalAddress())
                     {
                         String ip = Formatter.formatIpAddress(inetAddress.hashCode());
-                        Log.i("TRL", "***** IP=" + ip);
+                        Log.i(LOG_TAG, "***** IP=" + ip);
                         return ip;
                     }
                 }
@@ -78,42 +85,85 @@ public class TCPServerService extends Service
         return null;
     }
 
+    public String GetLocalIP()
+    {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+
+        // Convert little-endian to big-endianif needed
+        if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN))
+        {
+            ipAddress = Integer.reverseBytes(ipAddress);
+        }
+
+        byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+
+        String ipAddressString;
+        try
+        {
+            ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+        } catch (UnknownHostException ex)
+        {
+            Log.e("WIFIIP", "Unable to get host address.");
+            ipAddressString = null;
+        }
+
+        return ipAddressString;
+    }
+
     public void Listen(PotholeCollection potholeCollection, GPSTracker gps)
     {
         _gps = gps;
         _potholeCollection = potholeCollection;
+
+        Log.d(LOG_TAG, "GPS instance on TCPService: " + gps.toString());
 
         ServerThread = new Thread(new Runnable()
         {
             @Override
             public void run()
             {
-                try
+                while (true)
                 {
-                    String clientSentence;
-                    String capitalizedSentence;
-                    ServerSocket welcomeSocket = new ServerSocket(6789);
-                    Socket connectionSocket = welcomeSocket.accept();
-                    BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                    DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-                    while (true)
+                    Log.d(LOG_TAG, "Initializing while in thread do startup socket server.");
+                    ServerSocket welcomeSocket = null;
+                    try
                     {
-                        clientSentence = inFromClient.readLine();
-                        System.out.println("Received: " + clientSentence);
-
-                        Log.v("TRL", clientSentence);
-
-                        if(clientSentence.equals("p"))
+                        String clientSentence;
+                        //String capitalizedSentence;
+                        welcomeSocket = new ServerSocket(6789);
+                        Log.d(LOG_TAG, "Waiting connection...");
+                        Socket connectionSocket = welcomeSocket.accept();
+                        BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                        //DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+                        while (true)
                         {
-                            _potholeCollection.DeclareNewPothole(_gps.getLatitude(), _gps.getLongitude());
-                        }
+                            Log.d(LOG_TAG, "Waiting notification...");
 
-                        capitalizedSentence = clientSentence.toUpperCase() + '\n';
-                        outToClient.writeBytes(capitalizedSentence);
+                            clientSentence = inFromClient.readLine();
+
+                            Log.v(LOG_TAG, String.format("Received: %s (%s:%s)", clientSentence, _gps.getLatitude(), _gps.getLongitude()));
+
+                            _potholeCollection.DeclareNewPothole(_gps.getLatitude(), _gps.getLongitude());
+
+                            Log.d(LOG_TAG, "Back to TCP Service flow.");
+
+                            //outToClient.writeBytes(clientSentence);
+                        }
+                    } catch (Exception e)
+                    {
+                        if (welcomeSocket != null && !welcomeSocket.isClosed())
+                            try
+                            {
+                                welcomeSocket.close();
+                            } catch (IOException e1)
+                            {
+                                e1.printStackTrace();
+                            }
+
+                        Log.d(LOG_TAG, "Exception");
+                        Log.e(LOG_TAG, e.getMessage(), e);
                     }
-                } catch (Exception e)
-                {
-                    Log.e("TRL", e.getMessage(), e);
                 }
             }
         });
@@ -130,7 +180,7 @@ public class TCPServerService extends Service
     @Override
     public IBinder onBind(Intent intent)
     {
-        Toast.makeText(getApplicationContext(), "onBind", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "onBind", Toast.LENGTH_SHORT).show();
         return binder;
     }
 
@@ -138,7 +188,7 @@ public class TCPServerService extends Service
     {
         public TCPServerService GetService()
         {
-            Toast.makeText(getApplicationContext(), "GetService", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "GetService", Toast.LENGTH_SHORT).show();
             return TCPServerService.this;
         }
     }

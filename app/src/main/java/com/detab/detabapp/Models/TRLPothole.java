@@ -10,6 +10,7 @@ public class TRLPothole
 {
     public double Lat;
     public double Lng;
+    public double Deep;
 
     //[0] = Distance
     //[1] = Initial Bearing

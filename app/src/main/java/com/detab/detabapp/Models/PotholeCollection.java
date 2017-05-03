@@ -2,8 +2,11 @@ package com.detab.detabapp.Models;
 
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Handler;
 
+import com.detab.detabapp.Controllers.NewMap;
 import com.detab.detabapp.Providers.GetPotholesTask;
+import com.detab.detabapp.Providers.PotholeRenderProvider;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -22,15 +25,17 @@ public class PotholeCollection
     private double currentLat;
     private double currentLng;
     private LatLng lastUpdatePosion;
+    private PotholeRenderProvider _render;
 
     public PotholeCollection()
     {
         _potholes = new ArrayList<>();
     }
 
-    public PotholeCollection(double lat, double lng)
+    public PotholeCollection(PotholeRenderProvider render, double lat, double lng)
     {
         this();
+        _render = render;
         UpdateFromNetwork(lat, lng);
     }
 
@@ -95,24 +100,22 @@ public class PotholeCollection
         currentLat = lat;
         currentLng = lng;
 
-        if (_potholes == null)
+        GetPotholesTask j = new GetPotholesTask(lat, lng);
+        //j.delegate = this;
+        AsyncTask<String, Void, List<TRLPothole>> a = j.execute("http://educandoomundo.tk/api/pothole");
+        try
         {
-            GetPotholesTask j = new GetPotholesTask(lat, lng);
-            //j.delegate = this;
-            AsyncTask<String, Void, List<TRLPothole>> a = j.execute("http://educandoomundo.tk/api/pothole");
-            try
-            {
-                lastUpdatePosion = new LatLng(lat, lng);
-                //_potholes = a.get();
-                UpdateInternalPotholeList(a.get());
-            } catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            } catch (ExecutionException e)
-            {
-                e.printStackTrace();
-            }
+            lastUpdatePosion = new LatLng(lat, lng);
+            //_potholes = a.get();
+            UpdateInternalPotholeList(a.get());
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        } catch (ExecutionException e)
+        {
+            e.printStackTrace();
         }
+
         return _potholes;
     }
 
@@ -124,6 +127,12 @@ public class PotholeCollection
         //acho que vou por 900metros
         //No futuro terei que cuidar pois o lastUpdatePosition será atualizado tb por tempo e não só por distancia,
         //pois devemos ficar cientes de novos buracos que outros motoristas notificaram(ão)
+
+        if (lastUpdatePosion == null)
+        {
+            UpdateFromNetwork(lat, lng);
+            return;
+        }
 
         float[] r = new float[3];
         Location.distanceBetween(lastUpdatePosion.latitude, lastUpdatePosion.longitude, lat, lng, r);
@@ -150,5 +159,25 @@ public class PotholeCollection
         TRLPothole pothole = new TRLPothole(lng, lat);
         Location.distanceBetween(currentLat, currentLng, lat, lng, pothole.results);
         _potholes.add(pothole);
+
+        //final Handler mHandler = new Handler();
+        //_render.Render(_potholes);
+
+//        final Runnable mUpdateResults = new Runnable()
+//        {
+//            public void run()
+//            {
+//                _render.Render(_potholes);
+//            }
+//        };
+//        Thread t = new Thread()
+//        {
+//            public void run()
+//            {
+//
+//                mHandler.post(mUpdateResults);
+//            }
+//        };
+//        t.start();
     }
 }

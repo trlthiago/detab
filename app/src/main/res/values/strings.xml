@@ -2,4 +2,5 @@
     <string name="app_name">DETABApp</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_test_api">TestApi</string>
+    <string name="title_activity_requirements_failed">First you need...</string>
 </resources>
