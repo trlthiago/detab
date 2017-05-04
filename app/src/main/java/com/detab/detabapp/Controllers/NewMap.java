@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.detab.detabapp.Models.PermissionHelper;
@@ -65,7 +66,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
             Toast.makeText(getApplicationContext(), "onServiceConnected", Toast.LENGTH_SHORT).show();
             _tcpService = ((TCPServerService.TCPServerBinder) binder).GetService();
             _tcpService.Listen(_potholesCollection, _gps);
-            _self.setTitle(_tcpService.GetLocalIP());
+            _self.setTitle(_tcpService.GetLocalIpAddress());
 
             isBound = true;
         }
@@ -74,6 +75,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         {
             _tcpService = null;
             isBound = false;
+            Log.d(LOG_TAG, "TCP Service disconnected!");
         }
     };
     //endregion
@@ -101,7 +103,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         Log.d(LOG_TAG, "GPS instance on NewMap: " + _gps.toString());
         //startService(new Intent(getBaseContext(), TCPServerService.class));
         Intent bindServiceIntent = new Intent(this, TCPServerService.class);
-        //startService(bindServiceIntent);
+        startService(bindServiceIntent);
         bindService(bindServiceIntent, _tcpServiceConnection, Context.BIND_AUTO_CREATE);
 
         _speaker = new TRLSpeaker(this);
@@ -112,7 +114,8 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
     @Override
     public void onDestroy()
     {
-        Log.v(LOG_TAG, "onDestroy");
+        Log.v(LOG_TAG, "onDestroy called!");
+
         unbindService(_tcpServiceConnection);
         Intent stopservice = new Intent(this, TCPServerService.class);
         //stopService(stopservice);
@@ -145,19 +148,25 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 17);
         _map.moveCamera(cameraUpdate);
 
-        _potholesCollection = new PotholeCollection(_potholeRender, currentLocation.getLatitude(), currentLocation.getLongitude());
+        _potholesCollection = new PotholeCollection(this, _potholeRender, currentLocation.getLatitude(), currentLocation.getLongitude());
 
         //TODO: Move it to when postion change. On ready the API return should contain the distance calculated!
         _potholesCollection.ComputeDistance(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         _potholeRender.Render(_potholesCollection.GetAll(), true);
 
-        LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        //LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 //
 //        _currLocationMarker = _map.addMarker(new MarkerOptions()
 //                .position(latLng)
 //                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
 //                .title("Current Position").rotation(0));
+    }
+
+    public void UpdateTxt(String distance)
+    {
+        EditText editText = (EditText) findViewById(R.id.txtDistance);
+        editText.setText(distance);
     }
 
     @Override
@@ -174,8 +183,9 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         if (list.size() > 0)
         {
             _speaker.PlaySound();
-            _tts.Speak("Pothole in " + (int) list.get(0).GetDistance() + " meters");
-            Toast.makeText(this, "Pothole in " + (int) list.get(0).GetDistance() + " meters", Toast.LENGTH_SHORT).show();
+            String text = list.size() == 1 ? String.format("Buraco em %d metros", (int) list.get(0).GetDistance()) : "Buracos à frente, cuidado!";
+            _tts.Speak(text);
+            Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
         }
 
         //_currentLocation = location;
@@ -225,9 +235,13 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
 
     public void btnDefinePothole_Click(View v)
     {
-        //_tcpService.Listen(_potholesCollection, _gps);
-        //Toast.makeText(getApplicationContext(), _tcpService.Ping(), Toast.LENGTH_SHORT).show();
         _potholeRender.Render(_potholesCollection.GetAll());
+    }
+
+    public void btnCommitPotholes_Click(View v)
+    {
+        _potholesCollection.CommitFoundPotholes();
+        Toast.makeText(this, "Committed!", Toast.LENGTH_SHORT).show();
     }
 
     //endregion

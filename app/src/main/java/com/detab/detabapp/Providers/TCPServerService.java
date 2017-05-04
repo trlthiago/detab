@@ -19,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -27,6 +28,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 import java.util.Enumeration;
+import java.util.List;
+
+import cz.msebera.android.httpclient.conn.util.InetAddressUtils;
 
 import static android.content.ContentValues.TAG;
 
@@ -60,24 +64,38 @@ public class TCPServerService extends Service
         return "pong";
     }
 
-    public String getLocalIpAddress()
+    public String GetLocalIpAddress()
     {
         try
         {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); )
+            Enumeration<InetAddress> addresses = NetworkInterface.getByName("wlan0").getInetAddresses();
+
+            while (addresses.hasMoreElements())
             {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); )
+                InetAddress address = addresses.nextElement();
+                if (address instanceof Inet4Address)
                 {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress.isLinkLocalAddress())
-                    {
-                        String ip = Formatter.formatIpAddress(inetAddress.hashCode());
-                        Log.i(LOG_TAG, "***** IP=" + ip);
-                        return ip;
-                    }
+                    String ip = address.getHostAddress();
+                    return ip;
                 }
             }
+//
+//            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); )
+//            {
+//                NetworkInterface intf = en.nextElement();
+//                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); )
+//                {
+//                    InetAddress inetAddress = enumIpAddr.nextElement();
+//                    if (!inetAddress.isLoopbackAddress() && inetAddress.isLinkLocalAddress())
+//                    {
+//                        boolean inst = inetAddress instanceof Inet4Address;
+//                        //String ip = Formatter.formatIpAddress(inetAddress.hashCode());
+//                        String ip = inetAddress.getHostAddress();
+//                        Log.d(LOG_TAG, "***** IP=" + ip);
+//                        return ip;
+//                    }
+//                }
+//            }
         } catch (SocketException ex)
         {
             Log.e(TAG, ex.toString());
@@ -142,11 +160,18 @@ public class TCPServerService extends Service
 
                             clientSentence = inFromClient.readLine();
 
+                            if(clientSentence == null) clientSentence = "**** NULL clientSentence";
+
                             Log.v(LOG_TAG, String.format("Received: %s (%s:%s)", clientSentence, _gps.getLatitude(), _gps.getLongitude()));
 
-                            _potholeCollection.DeclareNewPothole(_gps.getLatitude(), _gps.getLongitude());
+                            if (clientSentence.startsWith("p"))
+                            {
+                                clientSentence = clientSentence.replace("p", "");
+                                _potholeCollection.DeclareNewPothole(_gps.getLatitude(), _gps.getLongitude(), Double.parseDouble(clientSentence));
+                            }
 
-                            Log.d(LOG_TAG, "Back to TCP Service flow.");
+                            _potholeCollection.UpdateTxt(clientSentence);
+                            //Log.d(LOG_TAG, "Back to TCP Service flow.");
 
                             //outToClient.writeBytes(clientSentence);
                         }
@@ -159,9 +184,10 @@ public class TCPServerService extends Service
                             } catch (IOException e1)
                             {
                                 e1.printStackTrace();
+                                Log.e(LOG_TAG, e1.getMessage(), e1);
                             }
 
-                        Log.d(LOG_TAG, "Exception");
+                        Log.e(LOG_TAG, "Exception "+ e.getMessage());
                         Log.e(LOG_TAG, e.getMessage(), e);
                     }
                 }

@@ -1,10 +1,12 @@
 package com.detab.detabapp.Models;
 
+import android.app.Activity;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Handler;
+import android.util.Log;
 
 import com.detab.detabapp.Controllers.NewMap;
+import com.detab.detabapp.Providers.CommitPotholesTask;
 import com.detab.detabapp.Providers.GetPotholesTask;
 import com.detab.detabapp.Providers.PotholeRenderProvider;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,20 +23,23 @@ import java.util.concurrent.ExecutionException;
 
 public class PotholeCollection
 {
+    public static String LOG_TAG = "detabapp";
     private volatile List<TRLPothole> _potholes;
     private double currentLat;
     private double currentLng;
     private LatLng lastUpdatePosion;
     private PotholeRenderProvider _render;
+    private NewMap _activity;
 
     public PotholeCollection()
     {
         _potholes = new ArrayList<>();
     }
 
-    public PotholeCollection(PotholeRenderProvider render, double lat, double lng)
+    public PotholeCollection(NewMap activity, PotholeRenderProvider render, double lat, double lng)
     {
         this();
+        _activity = activity;
         _render = render;
         UpdateFromNetwork(lat, lng);
     }
@@ -76,6 +81,7 @@ public class PotholeCollection
             if (!x.wasNotified && x.results[0] < 15.0)
             {
                 nearPotholes.add(x);
+                x.wasNotified = true;
             }
         }
 
@@ -100,6 +106,8 @@ public class PotholeCollection
         currentLat = lat;
         currentLng = lng;
 
+        //Log.d(LOG_TAG, "Updating from network...");
+
         GetPotholesTask j = new GetPotholesTask(lat, lng);
         //j.delegate = this;
         AsyncTask<String, Void, List<TRLPothole>> a = j.execute("http://educandoomundo.tk/api/pothole");
@@ -107,7 +115,11 @@ public class PotholeCollection
         {
             lastUpdatePosion = new LatLng(lat, lng);
             //_potholes = a.get();
-            UpdateInternalPotholeList(a.get());
+            List<TRLPothole> l = a.get();
+
+            //Log.d(LOG_TAG, "End of network updating!");
+
+            UpdateInternalPotholeList(l);
         } catch (InterruptedException e)
         {
             e.printStackTrace();
@@ -128,6 +140,8 @@ public class PotholeCollection
         //No futuro terei que cuidar pois o lastUpdatePosition será atualizado tb por tempo e não só por distancia,
         //pois devemos ficar cientes de novos buracos que outros motoristas notificaram(ão)
 
+        //Log.i(LOG_TAG, "Checking if need update...");
+
         if (lastUpdatePosion == null)
         {
             UpdateFromNetwork(lat, lng);
@@ -142,6 +156,9 @@ public class PotholeCollection
 
     private void UpdateInternalPotholeList(List<TRLPothole> list)
     {
+        if (list == null) //Quando tá sem wifi e falha a requisição
+            return;
+
         for (TRLPothole p : list)
         {
             //if(_potholes.stream().anyMatch(x -> x.Lat == p.Lat && x.Lng == p.Lng))
@@ -150,13 +167,16 @@ public class PotholeCollection
                 if (x.Lat == p.Lat && x.Lng == p.Lng)
                     exists = true;
             if (!exists)
+            {
+                p.wasCommited = true;//se ta vindo do servidor ja marca como wasCommited.
                 _potholes.add(p);
+            }
         }
     }
 
-    public void DeclareNewPothole(double lat, double lng)
+    public void DeclareNewPothole(double lat, double lng, double deep)
     {
-        TRLPothole pothole = new TRLPothole(lng, lat);
+        TRLPothole pothole = new TRLPothole(lng, lat, deep);
         Location.distanceBetween(currentLat, currentLng, lat, lng, pothole.results);
         _potholes.add(pothole);
 
@@ -179,5 +199,36 @@ public class PotholeCollection
 //            }
 //        };
 //        t.start();
+    }
+
+    public void CommitFoundPotholes()
+    {
+        List<TRLPothole> uncommiteds = new ArrayList<>();
+
+        for (TRLPothole x : _potholes)
+        {
+            if (!x.wasCommited)
+            {
+                uncommiteds.add(x);
+                x.wasCommited = true;
+            }
+        }
+
+        Log.d(LOG_TAG, String.format("Trying to commit potholes to server (%d potholes) ...", uncommiteds.size()));
+        CommitPotholesTask j = new CommitPotholesTask(uncommiteds);
+        j.execute("http://educandoomundo.tk/api/bulkpothole");
+        Log.d(LOG_TAG, "Potholes Committed!");
+    }
+
+    public void UpdateTxt(final String distance)
+    {
+        _activity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                _activity.UpdateTxt(distance);
+            }
+        });
     }
 }

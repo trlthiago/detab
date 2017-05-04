@@ -4,12 +4,39 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnDefinePothole"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="btnDefinePothole_Click"
-        android:text="Define Pothole Here"/>
+    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/GridLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:orientation="horizontal"
+                android:rowCount="1">
+        <Button
+            android:id="@+id/btnDefinePothole"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="btnDefinePothole_Click"
+            android:text="Define Pothole Here"
+            android:layout_row="0"
+            />
+
+        <Button
+            android:id="@+id/btnCommitPotholes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="btnCommitPotholes_Click"
+            android:text="Commit potholes"/>
+
+        <EditText
+            android:id="@+id/txtDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name"/>
+    </GridLayout>
+
 
     <fragment
         android:id="@+id/newmap"

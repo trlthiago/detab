@@ -1,5 +1,7 @@
 package com.detab.detabapp.Providers;
 
+import android.util.Log;
+
 import com.detab.detabapp.Models.TRLPothole;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -16,6 +18,7 @@ import java.util.List;
 public class PotholeRenderProvider
 {
     private GoogleMap _map;
+    public static String LOG_TAG = "detabapp";
 
     public void SetMapProvider(GoogleMap map)
     {
@@ -29,6 +32,7 @@ public class PotholeRenderProvider
 
     public void Render(List<TRLPothole> potholes, boolean firstRender)
     {
+        //Log.i(LOG_TAG, "Rendering potholes...");
         BitmapDescriptor markerType = firstRender
                 ? BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)
                 : BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
