@@ -136,6 +136,12 @@ public class TCPServerService extends Service
 
         Log.d(LOG_TAG, "GPS instance on TCPService: " + gps.toString());
 
+        if(ServerThread != null && ServerThread.isAlive())
+        {
+            Log.i(LOG_TAG, "TCP Thread is already running!");
+            return;
+        }
+
         ServerThread = new Thread(new Runnable()
         {
             @Override

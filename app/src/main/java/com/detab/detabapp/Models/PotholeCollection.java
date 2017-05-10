@@ -3,6 +3,8 @@ package com.detab.detabapp.Models;
 import android.app.Activity;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.detab.detabapp.Controllers.NewMap;
@@ -140,7 +142,7 @@ public class PotholeCollection
         //No futuro terei que cuidar pois o lastUpdatePosition será atualizado tb por tempo e não só por distancia,
         //pois devemos ficar cientes de novos buracos que outros motoristas notificaram(ão)
 
-        //Log.i(LOG_TAG, "Checking if need update...");
+        Log.i(LOG_TAG, "Checking if need update...");
 
         if (lastUpdatePosion == null)
         {
@@ -158,7 +160,7 @@ public class PotholeCollection
     {
         if (list == null) //Quando tá sem wifi e falha a requisição
             return;
-
+        int counter = 0;
         for (TRLPothole p : list)
         {
             //if(_potholes.stream().anyMatch(x -> x.Lat == p.Lat && x.Lng == p.Lng))
@@ -168,37 +170,40 @@ public class PotholeCollection
                     exists = true;
             if (!exists)
             {
+                counter++;
                 p.wasCommited = true;//se ta vindo do servidor ja marca como wasCommited.
                 _potholes.add(p);
             }
         }
+        Log.i(LOG_TAG, "Found " + counter + " new potholes!");
     }
 
     public void DeclareNewPothole(double lat, double lng, double deep)
     {
         TRLPothole pothole = new TRLPothole(lng, lat, deep);
+
+        //como ta vindo de um sensor embaixo do veiculo,
+        //não adianta avisar para este usuario que ja acaiu no buraco.
+        //Futuramento com outro sensor e quando enchergarmos à frente tem que mudar isso.
+        pothole.wasNotified = true;
+
+        Log.i(LOG_TAG, String.format("Lat=%f; Lng=%f", lat, lng));
+
         Location.distanceBetween(currentLat, currentLng, lat, lng, pothole.results);
         _potholes.add(pothole);
-
-        //final Handler mHandler = new Handler();
-        //_render.Render(_potholes);
-
-//        final Runnable mUpdateResults = new Runnable()
-//        {
-//            public void run()
-//            {
-//                _render.Render(_potholes);
-//            }
-//        };
-//        Thread t = new Thread()
-//        {
-//            public void run()
-//            {
-//
-//                mHandler.post(mUpdateResults);
-//            }
-//        };
-//        t.start();
+        try
+        {
+            new Handler(Looper.getMainLooper()).post(new Runnable()
+            {
+                public void run()
+                {
+                    _render.Render(_potholes);
+                }
+            });
+        } catch (Exception e)
+        {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        }
     }
 
     public void CommitFoundPotholes()

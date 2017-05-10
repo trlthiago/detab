@@ -25,7 +25,7 @@ public class GetPotholesTask extends AsyncTask<String, Void, List<TRLPothole>>
         TRLHttpClient client = new TRLHttpClient();
         //List<TRLPothole> obj = client.Get("http://educandoomundo.tk/api/pothole?lat=" + _lat + "&lng=" + _lng);
         String url = String.format("%s?lat=%s&lng=%s", urls[0], _lat, _lng);
-        //Log.d("detab", url);
+        Log.d("detab", url);
         List<TRLPothole> obj = client.Get(url);
 
         return obj;

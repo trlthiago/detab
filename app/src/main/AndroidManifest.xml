@@ -65,6 +65,11 @@
 
         <service android:name=".Providers.TRLService"/>
         <service android:name=".Providers.TCPServerService"/>
+        <service android:name=".Providers.FCMService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".Controllers.RequirementsFailed"

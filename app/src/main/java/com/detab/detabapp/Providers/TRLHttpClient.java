@@ -1,5 +1,7 @@
 package com.detab.detabapp.Providers;
 
+import android.util.Log;
+
 import com.detab.detabapp.Models.BulkPotholeModel;
 import com.detab.detabapp.Models.TRLPothole;
 import com.google.gson.Gson;
@@ -43,7 +45,7 @@ public class TRLHttpClient
             for (int i = 0; i < myJsonArraySize; i++)
             {
                 JSONObject item = (JSONObject) obj.get(i);
-                TRLPothole o = new TRLPothole(Double.parseDouble(item.get("Lat").toString()), Double.parseDouble(item.get("Lng").toString()), Double.parseDouble(item.get("Deep").toString()));
+                TRLPothole o = new TRLPothole(Double.parseDouble(item.get("Lng").toString()), Double.parseDouble(item.get("Lat").toString()), Double.parseDouble(item.get("Deep").toString()));
                 results.add(o);
             }
             return results;
@@ -76,7 +78,7 @@ public class TRLHttpClient
             jsonObject.put("potholes", array);
 
             String json = jsonObject.toString();
-
+            Log.i("detab", json);
             HttpPost httpPost = new HttpPost(url);
             httpPost.setEntity(new StringEntity(json));
             httpPost.setHeader("Accept", "application/json");
