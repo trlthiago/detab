@@ -13,6 +13,7 @@ import com.detab.detabapp.Providers.GetPotholesTask;
 import com.detab.detabapp.Providers.PotholeRenderProvider;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +30,7 @@ public class PotholeCollection
     private volatile List<TRLPothole> _potholes;
     private double currentLat;
     private double currentLng;
-    private LatLng lastUpdatePosion;
+    private LatLng lastUpdatePosion; //guarda a posição da ultima atualização do servidor, ou q pelo menos tentou-se atualizar.
     private PotholeRenderProvider _render;
     private NewMap _activity;
 
@@ -103,34 +104,34 @@ public class PotholeCollection
         return nearPotholes;
     }
 
-    private List<TRLPothole> UpdateFromNetwork(double lat, double lng)
+    private void UpdateFromNetwork(double lat, double lng)
     {
         currentLat = lat;
         currentLng = lng;
 
-        //Log.d(LOG_TAG, "Updating from network...");
+        GetPotholesTask asyncTask = new GetPotholesTask(lat, lng, this);
 
-        GetPotholesTask j = new GetPotholesTask(lat, lng);
-        //j.delegate = this;
-        AsyncTask<String, Void, List<TRLPothole>> a = j.execute("http://educandoomundo.tk/api/pothole");
         try
         {
-            lastUpdatePosion = new LatLng(lat, lng);
-            //_potholes = a.get();
-            List<TRLPothole> l = a.get();
-
-            //Log.d(LOG_TAG, "End of network updating!");
-
-            UpdateInternalPotholeList(l);
-        } catch (InterruptedException e)
+            asyncTask.execute("http://educandoomundo.tk/api/pothole");
+        } catch (Exception e)
         {
-            e.printStackTrace();
-        } catch (ExecutionException e)
-        {
-            e.printStackTrace();
+            Log.e(LOG_TAG, e.getMessage(), e);
         }
 
-        return _potholes;
+        lastUpdatePosion = new LatLng(lat, lng);
+    }
+
+    public void UpdateFromNetworkCallBack(List<TRLPothole> l)
+    {
+        try
+        {
+            UpdateInternalPotholeList(l);
+            RenderOnUIThread();
+        } catch (Exception e)
+        {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        }
     }
 
     public void CheckIfMustUpdate(double lat, double lng)
@@ -142,7 +143,7 @@ public class PotholeCollection
         //No futuro terei que cuidar pois o lastUpdatePosition será atualizado tb por tempo e não só por distancia,
         //pois devemos ficar cientes de novos buracos que outros motoristas notificaram(ão)
 
-        Log.i(LOG_TAG, "Checking if need update...");
+        //Log.i(LOG_TAG, "Checking if need update...");
 
         if (lastUpdatePosion == null)
         {
@@ -190,7 +191,14 @@ public class PotholeCollection
         Log.i(LOG_TAG, String.format("Lat=%f; Lng=%f", lat, lng));
 
         Location.distanceBetween(currentLat, currentLng, lat, lng, pothole.results);
+
         _potholes.add(pothole);
+
+        RenderOnUIThread();
+    }
+
+    public void RenderOnUIThread()
+    {
         try
         {
             new Handler(Looper.getMainLooper()).post(new Runnable()
@@ -227,13 +235,21 @@ public class PotholeCollection
 
     public void UpdateTxt(final String distance)
     {
-        _activity.runOnUiThread(new Runnable()
+        if (_activity == null)
+            Log.d(LOG_TAG, "Activity int PotholeCollection is NULL!!");
+        try
         {
-            @Override
-            public void run()
+            _activity.runOnUiThread(new Runnable()
             {
-                _activity.UpdateTxt(distance);
-            }
-        });
+                @Override
+                public void run()
+                {
+                    _activity.UpdateTxt(distance);
+                }
+            });
+        } catch (Exception e)
+        {
+            Log.e(LOG_TAG, e.getMessage(), e);
+        }
     }
 }

@@ -136,7 +136,7 @@ public class TCPServerService extends Service
 
         Log.d(LOG_TAG, "GPS instance on TCPService: " + gps.toString());
 
-        if(ServerThread != null && ServerThread.isAlive())
+        if (ServerThread != null && ServerThread.isAlive())
         {
             Log.i(LOG_TAG, "TCP Thread is already running!");
             return;
@@ -149,30 +149,40 @@ public class TCPServerService extends Service
             {
                 while (true)
                 {
-                    Log.d(LOG_TAG, "Initializing while in thread do startup socket server.");
+                    Log.d(LOG_TAG, "Initializing Loop inside thread to listen 6789 port.");
                     ServerSocket welcomeSocket = null;
                     try
                     {
                         String clientSentence;
-                        //String capitalizedSentence;
                         welcomeSocket = new ServerSocket(6789);
-                        Log.d(LOG_TAG, "Waiting connection...");
+                        Log.d(LOG_TAG, "Waiting for a connection...");
                         Socket connectionSocket = welcomeSocket.accept();
                         BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
                         //DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
                         while (true)
                         {
-                            Log.d(LOG_TAG, "Waiting notification...");
+                            Log.d(LOG_TAG, "Waiting for bytes...");
 
                             clientSentence = inFromClient.readLine();
 
-                            if(clientSentence == null) clientSentence = "**** NULL clientSentence";
+                            if (clientSentence == null)
+                            {
+                                clientSentence = "**** NULL clientSentence";
+                                _potholeCollection.UpdateTxt(clientSentence);
+                                throw new Exception("Client disconnected!");
+                            }
 
                             Log.v(LOG_TAG, String.format("Received: %s (%s:%s)", clientSentence, _gps.getLatitude(), _gps.getLongitude()));
 
-                            if (clientSentence.startsWith("p"))
+                            if (clientSentence.startsWith("u"))
                             {
-                                clientSentence = clientSentence.replace("p", "");
+                                //clientSentence = clientSentence.replace("u", "");
+                                Log.i(LOG_TAG, "Received update = " + clientSentence);
+                            } else if (clientSentence.startsWith("t"))
+                            {
+                                Log.i(LOG_TAG, "Received test signal = " + clientSentence);
+                            } else
+                            {
                                 _potholeCollection.DeclareNewPothole(_gps.getLatitude(), _gps.getLongitude(), Double.parseDouble(clientSentence));
                             }
 
@@ -193,7 +203,7 @@ public class TCPServerService extends Service
                                 Log.e(LOG_TAG, e1.getMessage(), e1);
                             }
 
-                        Log.e(LOG_TAG, "Exception "+ e.getMessage());
+                        Log.e(LOG_TAG, "Exception " + e.getMessage());
                         Log.e(LOG_TAG, e.getMessage(), e);
                     }
                 }

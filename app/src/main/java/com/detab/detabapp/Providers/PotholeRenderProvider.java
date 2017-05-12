@@ -30,7 +30,7 @@ public class PotholeRenderProvider
         Render(potholes, false);
     }
 
-    public void Render(List<TRLPothole> potholes, boolean firstRender)
+    public synchronized void Render(List<TRLPothole> potholes, boolean firstRender)
     {
         //Log.i(LOG_TAG, "Rendering potholes...");
         BitmapDescriptor markerType = firstRender

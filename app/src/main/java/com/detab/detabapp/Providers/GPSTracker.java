@@ -60,7 +60,7 @@ public class GPSTracker extends Service //implements LocationListener
             Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             context.startActivity(callGPSSettingIntent);
         }
-
+        isGPSEnabled = true;//força
         // getting network status
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -99,8 +99,11 @@ public class GPSTracker extends Service //implements LocationListener
                     if (location == null)
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-                    if(location == null)
+                    if (location == null)
                         location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+                    if (location == null)
+                        location = new Location(LocationManager.GPS_PROVIDER); //Vai retornar 0,0 mas é só pra não estourar exception
 
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();

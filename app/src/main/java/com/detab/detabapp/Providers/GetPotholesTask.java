@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.detab.detabapp.Controllers.GeneralTests;
-import com.detab.detabapp.Models.BulkPotholeModel;
+import com.detab.detabapp.Models.PotholeCollection;
 import com.detab.detabapp.Models.TRLPothole;
 
 import java.util.List;
@@ -13,11 +13,13 @@ public class GetPotholesTask extends AsyncTask<String, Void, List<TRLPothole>>
 {
     public GeneralTests delegate;
     private double _lat, _lng;
+    PotholeCollection _potholeCollection;
 
-    public GetPotholesTask(double lat, double lng)
+    public GetPotholesTask(double lat, double lng, PotholeCollection potholeCollection)
     {
         _lat = lat;
         _lng = lng;
+        _potholeCollection = potholeCollection;
     }
 
     protected List<TRLPothole> doInBackground(String... urls)
@@ -33,7 +35,7 @@ public class GetPotholesTask extends AsyncTask<String, Void, List<TRLPothole>>
 
     protected void onPostExecute(List<TRLPothole> list)
     {
-
+        _potholeCollection.UpdateFromNetworkCallBack(list);
     }
 }
 
