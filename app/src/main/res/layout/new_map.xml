@@ -37,7 +37,6 @@
             android:text="0"/>
     </GridLayout>
 
-
     <fragment
         android:id="@+id/newmap"
         android:name="com.google.android.gms.maps.SupportMapFragment"

@@ -113,7 +113,8 @@ public class PotholeCollection
 
         try
         {
-            asyncTask.execute("http://educandoomundo.tk/api/pothole");
+            //asyncTask.execute("http://educandoomundo.tk/api/pothole");
+            asyncTask.execute("http://detab.ga/api/pothole");
         } catch (Exception e)
         {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -229,7 +230,8 @@ public class PotholeCollection
 
         Log.d(LOG_TAG, String.format("Trying to commit potholes to server (%d potholes) ...", uncommiteds.size()));
         CommitPotholesTask j = new CommitPotholesTask(uncommiteds);
-        j.execute("http://educandoomundo.tk/api/bulkpothole");
+//        j.execute("http://educandoomundo.tk/api/bulkpothole");
+        j.execute("http://detab.ga/api/bulkpothole");
         Log.d(LOG_TAG, "Potholes Committed!");
     }
 

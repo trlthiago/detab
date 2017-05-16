@@ -68,6 +68,20 @@ public class GPSTracker extends Service //implements LocationListener
         //Toast.makeText(mContext, location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
     }
 
+    public static void CheckIsGpsProviderEnabled(Context mContext)
+    {
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+
+        // getting GPS status
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!isGPSEnabled)
+        {
+            Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            mContext.startActivity(callGPSSettingIntent);
+        }
+    }
+
     public boolean CheckPermissions()
     {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)

@@ -47,6 +47,7 @@ public class TCPServerService extends Service
     private Thread ServerThread;
     private PotholeCollection _potholeCollection;
     private GPSTracker _gps;
+    private int _tolerance, _checks;
 
     public TCPServerService()
     {
@@ -129,9 +130,12 @@ public class TCPServerService extends Service
         return ipAddressString;
     }
 
-    public void Listen(PotholeCollection potholeCollection, GPSTracker gps)
+    public void Listen(PotholeCollection potholeCollection, GPSTracker gps, int tolerance, int checks)
     {
         _gps = gps;
+        _checks = checks;
+        _tolerance = tolerance;
+
         _potholeCollection = potholeCollection;
 
         Log.d(LOG_TAG, "GPS instance on TCPService: " + gps.toString());
@@ -158,7 +162,7 @@ public class TCPServerService extends Service
                         Log.d(LOG_TAG, "Waiting for a connection...");
                         Socket connectionSocket = welcomeSocket.accept();
                         BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                        //DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+                        DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
                         while (true)
                         {
                             Log.d(LOG_TAG, "Waiting for bytes...");
@@ -180,6 +184,7 @@ public class TCPServerService extends Service
                                 Log.i(LOG_TAG, "Received update = " + clientSentence);
                             } else if (clientSentence.startsWith("t"))
                             {
+                                outToClient.writeBytes(_tolerance + ";" + _checks);
                                 Log.i(LOG_TAG, "Received test signal = " + clientSentence);
                             } else
                             {
@@ -188,8 +193,6 @@ public class TCPServerService extends Service
 
                             _potholeCollection.UpdateTxt(clientSentence);
                             //Log.d(LOG_TAG, "Back to TCP Service flow.");
-
-                            //outToClient.writeBytes(clientSentence);
                         }
                     } catch (Exception e)
                     {

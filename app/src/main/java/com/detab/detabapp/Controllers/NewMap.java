@@ -65,7 +65,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
             Log.i(LOG_TAG, "onServiceConnected");
             Toast.makeText(getApplicationContext(), "onServiceConnected", Toast.LENGTH_SHORT).show();
             _tcpService = ((TCPServerService.TCPServerBinder) binder).GetService();
-            _tcpService.Listen(_potholesCollection, _gps);
+            _tcpService.Listen(_potholesCollection, _gps, _tolerance, _checks);
             _self.setTitle(_tcpService.GetLocalIpAddress());
 
             isBound = true;
@@ -86,6 +86,9 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
     public void onCreate(Bundle savedInstanceState)
     {
         _self = this;
+
+        LoadExtras();
+
         _potholeRender = new PotholeRenderProvider(); //neste momento a var ta null, tem que ver se isso funciona ou nao...
 
         super.onCreate(savedInstanceState);
@@ -109,6 +112,26 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         _speaker = new TRLSpeaker(this);
         _tts = new TRLTextToSpeech(this);
         Log.d(LOG_TAG, "Fim do OnCreate");
+    }
+
+    private int _tolerance, _checks;
+
+    private void LoadExtras()
+    {
+        _checks = 2;
+        _tolerance = 2;
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null)
+        {
+            String tmpTolerance = extras.getString("TOLERANCE");
+            if (tmpTolerance != null && tmpTolerance.length() > 0)
+                _tolerance = Integer.parseInt(tmpTolerance);
+
+            String tmpChecks = extras.getString("CHECKS");
+            if (tmpChecks != null && tmpChecks.length() > 0)
+                _checks = Integer.parseInt(tmpChecks);
+        }
     }
 
     @Override
