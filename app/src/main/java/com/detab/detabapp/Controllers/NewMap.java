@@ -65,7 +65,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
             Log.i(LOG_TAG, "onServiceConnected");
             Toast.makeText(getApplicationContext(), "onServiceConnected", Toast.LENGTH_SHORT).show();
             _tcpService = ((TCPServerService.TCPServerBinder) binder).GetService();
-            _tcpService.Listen(_potholesCollection, _gps, _tolerance, _checks);
+            _tcpService.Listen(_potholesCollection, _gps, _tolerance, _checks, _readsInterval);
             _self.setTitle(_tcpService.GetLocalIpAddress());
 
             isBound = true;
@@ -114,7 +114,7 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
         Log.d(LOG_TAG, "Fim do OnCreate");
     }
 
-    private int _tolerance, _checks;
+    private int _tolerance, _checks, _readsInterval;
 
     private void LoadExtras()
     {
@@ -131,6 +131,10 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
             String tmpChecks = extras.getString("CHECKS");
             if (tmpChecks != null && tmpChecks.length() > 0)
                 _checks = Integer.parseInt(tmpChecks);
+
+            String tmpReads = extras.getString("READSINTERVAL");
+            if (tmpReads != null && tmpReads.length() > 0)
+                _readsInterval = Integer.parseInt(tmpReads);
         }
     }
 

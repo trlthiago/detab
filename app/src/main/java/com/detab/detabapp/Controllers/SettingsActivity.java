@@ -29,8 +29,10 @@ public class SettingsActivity extends AppCompatActivity
         Intent intent = new Intent(this, NewMap.class);
         EditText txtTolerance = (EditText) findViewById(R.id.txtTolerance);
         EditText txtChecks = (EditText) findViewById(R.id.txtChecks);
+        EditText txtReadsInternal = (EditText) findViewById(R.id.txtReadsInternal);
         intent.putExtra("TOLERANCE", txtTolerance.getText().toString());
         intent.putExtra("CHECKS", txtChecks.getText().toString());
+        intent.putExtra("READSINTERVAL", txtReadsInternal.getText().toString());
         startActivity(intent);
     }
 }

@@ -47,7 +47,7 @@ public class TCPServerService extends Service
     private Thread ServerThread;
     private PotholeCollection _potholeCollection;
     private GPSTracker _gps;
-    private int _tolerance, _checks;
+    private int _tolerance, _checks, _readsInterval;
 
     public TCPServerService()
     {
@@ -130,11 +130,12 @@ public class TCPServerService extends Service
         return ipAddressString;
     }
 
-    public void Listen(PotholeCollection potholeCollection, GPSTracker gps, int tolerance, int checks)
+    public void Listen(PotholeCollection potholeCollection, GPSTracker gps, int tolerance, int checks, int readsInternal)
     {
         _gps = gps;
         _checks = checks;
         _tolerance = tolerance;
+        _readsInterval = readsInternal;
 
         _potholeCollection = potholeCollection;
 
@@ -184,8 +185,9 @@ public class TCPServerService extends Service
                                 Log.i(LOG_TAG, "Received update = " + clientSentence);
                             } else if (clientSentence.startsWith("t"))
                             {
-                                outToClient.writeBytes(_tolerance + ";" + _checks);
-                                Log.i(LOG_TAG, "Received test signal = " + clientSentence);
+                                String respose = _tolerance + ";" + _checks + ";" + _readsInterval;
+                                outToClient.writeBytes(respose);
+                                Log.i(LOG_TAG, "Received test signal = " + clientSentence + " - Respose = " + respose);
                             } else
                             {
                                 _potholeCollection.DeclareNewPothole(_gps.getLatitude(), _gps.getLongitude(), Double.parseDouble(clientSentence));

@@ -21,11 +21,11 @@
         />
 
     <TextView
-        android:id="@+id/lblChecks"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:text="Verificações redundantes:"
-        />
+    android:id="@+id/lblChecks"
+    android:layout_width="368dp"
+    android:layout_height="wrap_content"
+    android:text="Verificações redundantes:"
+    />
 
     <EditText
         android:id="@+id/txtTolerance"
@@ -35,7 +35,21 @@
         android:inputType="number"
         android:text="2"
         />
+    <TextView
+        android:id="@+id/lblReadsInternal"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:text="Intervalo de Leitura (ms):"
+        />
 
+    <EditText
+        android:id="@+id/txtReadsInternal"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:text="50"
+        />
     <Button
         android:id="@+id/btnSaveSettings"
         android:layout_width="368dp"
