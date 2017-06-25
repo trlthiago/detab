@@ -192,8 +192,8 @@ public class NewMap extends AppCompatActivity implements OnMapReadyCallback, Loc
 
     public void UpdateTxt(String distance)
     {
-        EditText editText = (EditText) findViewById(R.id.txtDistance);
-        editText.setText(distance);
+//        EditText editText = (EditText) findViewById(R.id.txtDistance);
+//        editText.setText(distance);
     }
 
     @Override
